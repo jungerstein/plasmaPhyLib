@@ -22,6 +22,6 @@ elemental function borisOneStep(vOld, B, E, q, m, c, deltaT) result (vNew)
            (q * deltaT**2 / (2 * m * c)) * (bigC .x. B) + &
            (q * deltaT**2 / (2 * m * c) * (bigC .dot. B)) * B) &
           / &
-          (1 + q**2 * (B .dot. B) * deltaT**2i / (4 * m**2 * c**2))
+          (1 + q**2 * (B .dot. B) * deltaT**2 / (4 * m**2 * c**2))
   vNew = vPlus + (q * deltaT / 2 / m) * E
 end function borisOneStep
