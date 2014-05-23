@@ -74,9 +74,9 @@ module vec3d
     type(vec3), intent (in) :: a, b
     type(vec3) :: c
 
-    c % x = a % y - b % z
-    c % y = a % z - b % x
-    c % z = a % x - b % y
+    c % x = a % y * b % z - a % z * b % y
+    c % y = a % z * b % x - a % x * b % z
+    c % z = a % x * b % y - a % y * b % x
   end function vecCrossVec
 
   elemental function vecDivConst(a, alpha) result (b)
