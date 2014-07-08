@@ -19,17 +19,7 @@ _Complex double randPhaseFactor(void)
   return phaseFactor(alpha); 
 }
 
-void randomAngle(_Complex double * res, double * amp, int nData)
+_Complex double randomAngle(double amp)
 {
-  int i; 
-  _Complex double * pOut; 
-  double * pIn; 
-  pOut = res; 
-  pIn = amp;
-  for (i = 0; i < nData; i++)
-  {
-    (*pOut) = randPhaseFactor() * (*pIn); 
-    pOut++; 
-    pIn++; 
-  }
+  return (amp * randPhaseFactor()); 
 }
