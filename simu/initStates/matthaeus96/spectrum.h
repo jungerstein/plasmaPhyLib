@@ -6,6 +6,8 @@
 #ifndef JSTEIN_MATT96_SPECTRUM_H
 #define JSTEIN_MATT96_SPECTRUM_H
 
+#include "vec.h"
+
 typedef struct
 {
   double kMin; 
@@ -15,10 +17,14 @@ typedef struct
 }
 paramMatt;
 
-typedef double vec[3]; 
-typedef int index[3];
+/* Gives k of higher order. Here k should be unterstood as a component.  */
+/* Why C does not have a power operator???!!! */
+#define exactK(k, d) ((k) * (1 - (k)*(k) * (d)*(d)/6 + (k)*(k)*(k)*(k) * (d)*(d)*(d)*(d)/120))
 
 /* Gives amplitude of phys (instead of PSD). */
 double spectrumMatt96(double k, paramMatt param); 
+
+/* ``Trims'' delta v so that delta v . k = 0 */
+void trimVec(vec trim, vec v, vec k, vec d); 
 
 #endif /* ifndef JSTEIN_MATT96_SPECTRUM_H */
