@@ -4,7 +4,6 @@
 
 #include "spectrum.h"
 #include <math.h>
-#include <common.h>
 
 double spectrumMatt96(double k, paramMatt param)
 {
