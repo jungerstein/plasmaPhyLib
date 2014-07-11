@@ -1,4 +1,4 @@
-! pvi.f90
+! pvi.f95
 ! computes pvi. 
 ! Should be used with f95 and later. 
 
