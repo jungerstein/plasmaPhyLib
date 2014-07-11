@@ -28,14 +28,6 @@ program calcPVI
   call get_command_argument(5, charN)
 
   read(unit = charN, fmt=*) n
-  ! DEBUG CODE, 8 lines
-  ! VVVVVVVVVV
-  print *, nameAus
-  print *, nameX
-  print *, nameY
-  print *, nameZ
-  print *, n
-  ! ^^^^^^^^^^
   allocate(x(n, n, n), y(n, n, n), z(n, n, n), aus(n, n, n))
   inquire(iolength=lenIO) x
   open(32, file=nameX, form='unformatted', access='direct', recl=lenIO, &
