@@ -14,7 +14,7 @@ subroutine arrangeData(res, dataIn, coordCentres)
   double precision :: minX, maxX, minY, maxY, minZ, maxZ
   integer :: nx, ny, nz, nBlockX, nBlockY, nBlockZ, nDim
   integer :: nGridX, nGridY, nGridZ
-  integer :: i, j, k, minI, minJ, minK, maxI, maxJ, maxK, iCorr, jCorr, kCorr
+  integer :: i, j, k, minI, minJ, minK, maxI, maxJ, maxK, iCoor, jCoor, kCoor
   integer :: minIB, minJB, minKB, maxIB, maxJB, maxKB
 
   ! FIXME Should the procession die? 
