@@ -5,7 +5,7 @@ module segment
 contains
 elemental function whichSegment(x, xLower,xUpper, iLower,iUpper) result (i)
   implicit none
-  double presicion, intent (in) :: x, xLower, xUpper
+  double precision, intent (in) :: x, xLower, xUpper
   integer, intent (in) :: iLower, iUpper
 
   integer :: i
