@@ -63,4 +63,54 @@ subroutine arrangeData(res, dataIn, coordCentres)
 
 end subroutine arrangeData
 
+subroutine deblock(res, dataIn, sizeBlock)
+  implicit none
+  
+  double precision, intent (in), dimension (:, :, :) :: dataIn
+  double precision, intent (out), dimension (:, :, :) :: res
+  integer, intent (in) :: sizeBlock
+
+  integer :: nx, ny, nz, nBlockX, nBlockY, nBlockZ
+  integer :: nGridX, nGridY, nGridZ
+  integer :: i, j, k, iB, jB, kB, iBig, jBig, kBig, iRead, jRead, kRead
+
+  nx = size(dataIn, 1)
+  ny = size(dataIn, 2)
+  nz = size(dataIn, 3)
+  nBlockX = nx / sizeBlock
+  nBlockY = ny / sizeBlock
+  nBlockZ = nz / sizeBlock
+  nGridX = sizeBlock
+  nGridY = sizeBlock
+  nGridZ = sizeBlock
+  iRead = 1
+  jRead = 1
+  kRead = 1
+  do kB = 1, nBlockZ
+  do jB = 1, nBlockY
+  do iB = 1, nBlockX
+    do k = 1, nGridZ
+      kBig = (kB - 1) * nGridZ + k
+    do j = 1, nGridY
+      jBig = (jB - 1) * nGridY + j
+    do i = 1, nGridX
+      iBig = (iB - 1) * nGridX + i
+      res(iBig, jBig, kBig) = dataIn(iRead, jRead, kRead)
+      iRead = iRead + 1
+      if (iRead .eq. nx + 1) then
+        iRead = 1
+        jRead = jRead + 1
+        if (jRead .eq. ny + 1) then
+          jRead = 1
+          kRead = kRead + 1
+        end if
+      end if
+    end do
+    end do
+    end do
+  end do
+  end do
+  end do
+
+end subroutine deblock
 end module dataarrange
