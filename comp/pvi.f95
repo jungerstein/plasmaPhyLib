@@ -36,7 +36,7 @@ subroutine compPVI(res, compX, compY, compZ)
   advY = ((advXY-compX)**2 + (advYY-compY)**2 + (advZY-compZ)**2)
   advZ = ((advXZ-compX)**2 + (advYZ-compY)**2 + (advZZ-compZ)**2)
   pviDenom = advX + advY + advZ
-  res = pviDenom / (sum(pviDenom) / (nx * ny * nz))
+  res = sqrt(pviDenom / (sum(pviDenom) / (nx * ny * nz)))
 end subroutine compPVI
 
 end module pvi
