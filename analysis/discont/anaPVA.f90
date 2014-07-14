@@ -1,4 +1,5 @@
 program anaMva
+  use discont, only:judgeDisc
   use mva, only:goMVA, printMVA
   implicit none
   
@@ -52,5 +53,7 @@ program anaMva
 
   call goMVA(vals, vecs, Bx, By, Bz, i, j, k, width)
   call printMVA(vals, vecs)
+
+  call judgeDisc(Bx, By, Bz, i, j, k, width)
 
 end program  
