@@ -50,7 +50,7 @@ subroutine allocateCountBin(binToProc, nBins, valMin, valMax)
   allocate(binToProc % binCounts(nBins))
 
   binToProc % binCounts = 0
-  binToProc % binBoundaries = (/ (minAct + dx * i, i=1, nBins) /)
+  binToProc % binBoundaries = (/ (minAct + dx * i, i=1, nBins + 1) /)
 
   if (isUseLog) then
     binToProc % binBoundaries = 10 ** (binToProc % binBoundaries)
@@ -88,7 +88,7 @@ function searchBin(binToProc, x)
     searchBin = binToProc%n + 1
   else
     do i = 1, binToProc % n
-      if (x .ge. binToProc % binBoundaries(i)) then
+      if (x .lt. binToProc % binBoundaries(i + 1)) then
         searchBin = i
         exit
       end if
