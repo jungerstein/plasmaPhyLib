@@ -46,8 +46,12 @@ module vht
       stop 
     end if
 
-    call getri(working, ipiv)
+    call getri(working, ipiv, info)
     inv = working
+    if ((info .ne. 0)) then
+      print *, 'Computation is failed because of the element #', info
+      stop
+    end if
   end subroutine invSymMat
 
   subroutine calcVHT(vHT, Bx, By, Bz, vx, vy, vz)
@@ -66,6 +70,7 @@ module vht
     nx = size(Bx, 1)
     ny = size(Bx, 2)
     nz = size(Bx, 3)
+    nGrid = nx * ny * nz
     sumKm = 0
     sumKm_dotVm = 0
     do k = 1, nz
@@ -91,7 +96,7 @@ module vht
     end do
     end do
     sumKm_dotVm = sumKm_dotVm / nGrid
-    KZero = sumKm / nGrid
+    KZero = sumKm / nGrid 
     call invSymMat(invKZero, KZero, .true.)
     res = matmul(invKZero, sumKm_dotVm)
 
