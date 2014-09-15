@@ -20,7 +20,7 @@ module vht
   ! But the matrix must be symmetric.
   subroutine invSymMat(inv, mat, isSingularExpected)
     use mkl95_precision, only: wp=>dp
-    use mkl95_lapack, only: getrf, getri
+    use lapack95, only: getrf, getri
     implicit none
 
     double precision, dimension (3, 3), intent (out) :: inv
@@ -28,7 +28,7 @@ module vht
     logical, intent (in), optional :: isSingularExpected
 
     double precision, dimension (3, 3) :: working
-    double precision, dimension (3) :: ipiv
+    integer, dimension (3) :: ipiv
     logical :: isNotComplainAboutSingular
 
     integer :: info
@@ -48,7 +48,7 @@ module vht
 
     call getri(working, ipiv)
     inv = working
-  end subroutine invMat
+  end subroutine invSymMat
 
   subroutine calcVHT(vHT, Bx, By, Bz, vx, vy, vz)
     implicit none
@@ -91,7 +91,7 @@ module vht
     end do
     end do
     sumKm_dotVm = sumKm_dotVm / nGrid
-    KZero = sumKm_dotVm / nGrid
+    KZero = sumKm / nGrid
     call invSymMat(invKZero, KZero, .true.)
     res = matmul(invKZero, sumKm_dotVm)
 
