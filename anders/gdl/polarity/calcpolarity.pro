@@ -31,10 +31,10 @@ function calcpolarity, c, va, theta, rhoZero, fast = fast, slow = slow, alfven =
     BPerp = BFactor * BPerpFactor
 
     res(rho_) = rhoZero * epsilon
-    res(vPara_) = vPara
-    res(vPerp_) = vPerp
-    res(BPara_) = BPara
-    res(BPerp_) = BPerp
+    res(vPara_) = vPara * epsilon
+    res(vPerp_) = vPerp * epsilon
+    res(BPara_) = BPara * epsilon
+    res(BPerp_) = BPerp * epsilon
   endif
   if (keyword_set(alfven)) then begin
     res(v3_) = 1
