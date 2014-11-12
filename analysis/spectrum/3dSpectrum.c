@@ -9,6 +9,15 @@
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #define PU(x, n) (((x) * 2 < (n)) ? (x) : ((x) - (n)))
 
+void calPDF(double * pdf, double * power, double dk, int n)
+{
+  pdf[0] = 0;
+  for (int i = 1; i < n; i++)
+  {
+    pdf[i] = power[i] / (dk * i);  
+  }
+}
+
 void calPowerPara(double * power, fftw_complex * fft, int nPower, double dk, double * kk, double * dir, int * n)
 {
 
@@ -35,7 +44,7 @@ void calPowerPara(double * power, fftw_complex * fft, int nPower, double dk, dou
     if (kBin < 0) kBin = 0;
     if (kBin >= nPower) kBin = nPower;
     coefFFT = *p++; 
-    power[kBin] += cabs(coefFFT) * cabs(coefFFT) * (1 + (i2+j2+k2!=0)); 
+    power[kBin] += cabs(coefFFT) * cabs(coefFFT); 
   }
 }
 
@@ -73,7 +82,7 @@ void calPowerPerp(double * power, fftw_complex * fft, int nPower, double dk, dou
     kBin = ceil(kPerp/dk - 0.5); 
     if (kBin >= nPower) kBin = nPower;
     coefFFT = *p++; 
-    power[kBin] += cabs(coefFFT) * cabs(coefFFT) * (1 + (i2+j2+k2!=0)); 
+    power[kBin] += cabs(coefFFT) * cabs(coefFFT); 
   }
 }
 
