@@ -5,6 +5,9 @@
 #include <math.h>
 #include <stdlib.h>
 #include "3dSpectrum.h"
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+#define PU(x, n) (((x) * 2 < (n)) ? (x) : ((x) - (n)))
 
 void calPowerPara(double * power, fftw_complex * fft, int nPower, double dk, double * kk, double * dir, int * n)
 {
@@ -19,20 +22,20 @@ void calPowerPara(double * power, fftw_complex * fft, int nPower, double dk, dou
   fftw_complex * p; 
   fftw_complex coefFFT;
   p = fft;
-  for (int k = 0; k < n[2]; k++) 
-  for (int j = 0; j < n[1]; j++) 
-  for (int i = 0; i < n[0]; i++) 
+  int i, j, k;
+  for (int k2 = 0; k2 < n[2]; k2++) 
+  for (int j2 = 0; j2 < n[1]; j2++) 
+  for (int i2 = 0; i2 < n[0]; i2++) 
   {
+    i = PU(i2, n[0]); 
+    j = PU(j2, n[1]); 
+    k = PU(k2, n[2]); 
     kPara = fabs(i*kk[0]*dir[0] + j*kk[1]*dir[1] + k*kk[2]*dir[2]); 
     kBin = ceil(kPara/dk - 0.5); 
     if (kBin < 0) kBin = 0;
     if (kBin >= nPower) kBin = nPower;
     coefFFT = *p++; 
-    if (i <= n[0]/2 && j <= n[1]/2 && k <= n[2]/2)
-    {
-      coefFFT *= 1 + (i+j+k != 0);
-      power[kBin] += cabs(coefFFT) * cabs(coefFFT); 
-    }
+    power[kBin] += cabs(coefFFT) * cabs(coefFFT) * (1 + (i2+j2+k2!=0)); 
   }
 }
 
@@ -51,10 +54,14 @@ void calPowerPerp(double * power, fftw_complex * fft, int nPower, double dk, dou
   int kBin;
   double xPara, yPara, zPara;
   double xRemn, yRemn, zRemn;
-  for (int k = 0; k < n[2]; k++) 
-  for (int j = 0; j < n[1]; j++) 
-  for (int i = 0; i < n[0]; i++) 
+  int i, j, k;
+  for (int k2 = 0; k2 < n[2]; k2++) 
+  for (int j2 = 0; j2 < n[1]; j2++) 
+  for (int i2 = 0; i2 < n[0]; i2++) 
   {
+    i = PU(i2, n[0]); 
+    j = PU(j2, n[1]); 
+    k = PU(k2, n[2]); 
     xPara = i*kk[0]*dir[0]; 
     yPara = j*kk[1]*dir[1]; 
     zPara = k*kk[2]*dir[2]; 
@@ -66,11 +73,7 @@ void calPowerPerp(double * power, fftw_complex * fft, int nPower, double dk, dou
     kBin = ceil(kPerp/dk - 0.5); 
     if (kBin >= nPower) kBin = nPower;
     coefFFT = *p++; 
-    if (i <= n[0]/2 && j <= n[1]/2 && k <= n[2]/2)
-    {
-      coefFFT *= 1 + (i+j+k != 0);
-      power[kBin] += cabs(coefFFT) * cabs(coefFFT); 
-    }
+    power[kBin] += cabs(coefFFT) * cabs(coefFFT) * (1 + (i2+j2+k2!=0)); 
   }
 }
 
