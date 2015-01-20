@@ -86,11 +86,50 @@ contains
     calcPhi = (i - 0.5) * dPhi + meshEquator%phiMin
   end function calcPhi
 
+  ! This is for 2.5D case. 
   subroutine doGrad(res, vals, meshEquator)
     implicit none
                                            !  r, phi
     double precision, intent (in), dimension (:, :) :: vals 
     type (meshSphereEquator), intent (in) :: meshEquator
+    type (vecSphere), intent (out), &
+      dimension (size(vals, 1) - 1, size(vals, 2) - 1) :: res
 
+    integer :: iR, iPhi, nR, nPhi
+    double precision :: r, dr, dPhi
+
+    nR = size(vals, 1)
+    nPhi = size(vals, 2)
+
+    checkGrid(meshEquator%nR, nR, 'r mesh')
+    checkGrid(meshEquator%nPhi, nPhi, 'phi mesh')
+
+    dr = calcDr(meshEquator)
+    dPhi = calcDphi(meshEquator)
+
+    do iPhi = 1, nPhi - 1
+      do iR = 1, nR - 1
+        r = calcR(iR, dr, meshEquator) 
+        ! grad_r u = partial u / partial r
+        res(iR, iPhi) % r = (u(iR + 1, iPhi) - u(iR, iPhi)) / dr
+        ! grad_theta u = 0
+        res(iR, iPhi) % theta = 0
+        ! grad_phi u = (1/r) (partial u / partial phi)
+        res(iR, iPhi) % phi = 1/r * (u(iR, iPhi + 1) - u(iR, iPhi)) / dPhi
+      end do
+    end do
   end subroutine doGrad
+
+  subroutine checkGrid(a, b, namen)
+    implicit none
+    integer, intent (in) :: a, b
+    character (len = *), intent (in) :: namen
+
+    if (a .ne. b) then
+      ! TODO to stderr. 
+      print *, 'Size of ', namen, ' should be ', b, ', but set as ', a, '. '
+      print *, 'Please correct it. The program is bewildered and stops. '
+      stop
+    end if
+  end subroutine checkGrid
 end module spherCalculus
