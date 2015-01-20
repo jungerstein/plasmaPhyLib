@@ -20,14 +20,25 @@ module spherCalculus
     double precision :: phiMin, phiMax
     integer :: nR, nPhi
   end type meshSphereEquator
+
+  interface calcR
+    module procedure calcR_2, calcR_3
+  end interface calcR
+
+  interface calcPhi
+    module procedure calcPhi_2, calcPhi_3
+  end interface calcPhi
 contains
   function calcDr(meshEquator)
     implicit none
     type (meshSphereEquator), intent (in) :: meshEquator
     double precision :: calcDr
 
-    if (meshEquator%nR .eq. 1) return 0
-    calcDr = (meshEquator%rMax - meshEquator%rMin) / (meshEquator%nR - 1)
+    if (meshEquator%nR .eq. 1) then
+      calcDr = 0
+    else
+      calcDr = (meshEquator%rMax - meshEquator%rMin) / (meshEquator%nR - 1)
+    end if
   end function calcDr
 
   function calcDphi(meshEquator)
@@ -35,56 +46,59 @@ contains
     type (meshSphereEquator), intent (in) :: meshEquator
     double precision :: calcDphi
 
-    if (meshEquator%nPhi .eq. 1) return 0
-    calcDphi = (meshEquator%phiMax - meshEquator%phiMin) &
+    if (meshEquator%nPhi .eq. 1) then
+      calcDphi =  0
+    else
+      calcDphi = (meshEquator%phiMax - meshEquator%phiMin) &
              / (meshEquator%nPhi - 1)
+    end if
   end function calcDphi
 
-  function calcR(i, meshEquator)
+  function calcR_2(i, meshEquator)
     implicit none
     integer, intent (in) :: i
     type (meshSphereEquator), intent (in) :: meshEquator
-    double precision :: calcR
+    double precision :: calcR_2
 
     double precision :: dr
 
     dr = calcDr(meshEquator)
-    calcR = (i - 0.5) * dr + meshEquator%rMin
-  end function calcR
+    calcR_2 = (i - 0.5) * dr + meshEquator%rMin
+  end function calcR_2
 
   ! A fast version. 
-  function calcR(i, dr, meshEquator)
+  function calcR_3(i, dr, meshEquator)
     implicit none
     integer, intent (in) :: i
     double precision, intent (in) :: dr
     type (meshSphereEquator), intent (in) :: meshEquator
-    double precision :: calcR
+    double precision :: calcR_3
 
-    calcR = (i - 0.5) * dr + meshEquator%rMin
-  end function calcR
+    calcR_3 = (i - 0.5) * dr + meshEquator%rMin
+  end function calcR_3
 
-  function calcPhi(i, meshEquator)
+  function calcPhi_2(i, meshEquator)
     implicit none
     integer, intent (in) :: i
     type (meshSphereEquator), intent (in) :: meshEquator
-    double precision :: calcPhi
+    double precision :: calcPhi_2
 
     double precision :: dPhi
 
     dPhi = calcDphi(meshEquator)
-    calcPhi = (i - 0.5) * dPhi + meshEquator%phiMin
-  end function calcPhi
+    calcPhi_2 = (i - 0.5) * dPhi + meshEquator%phiMin
+  end function calcPhi_2
 
   ! A fast version. 
-  function calcPhi(i, dPhi, meshEquator)
+  function calcPhi_3(i, dPhi, meshEquator)
     implicit none
     integer, intent (in) :: i
     double precision, intent (in) :: dPhi
     type (meshSphereEquator), intent (in) :: meshEquator
-    double precision :: calcPhi
+    double precision :: calcPhi_3
 
-    calcPhi = (i - 0.5) * dPhi + meshEquator%phiMin
-  end function calcPhi
+    calcPhi_3 = (i - 0.5) * dPhi + meshEquator%phiMin
+  end function calcPhi_3
 
   ! This is for 2.5D case. 
   subroutine doGrad(res, vals, meshEquator)
@@ -101,8 +115,8 @@ contains
     nR = size(vals, 1)
     nPhi = size(vals, 2)
 
-    checkGrid(meshEquator%nR, nR, 'r mesh')
-    checkGrid(meshEquator%nPhi, nPhi, 'phi mesh')
+    call checkGrid(meshEquator%nR, nR, 'r mesh')
+    call checkGrid(meshEquator%nPhi, nPhi, 'phi mesh')
 
     dr = calcDr(meshEquator)
     dPhi = calcDphi(meshEquator)
@@ -111,11 +125,11 @@ contains
       do iR = 1, nR - 1
         r = calcR(iR, dr, meshEquator) 
         ! grad_r u = partial u / partial r
-        res(iR, iPhi) % r = (u(iR + 1, iPhi) - u(iR, iPhi)) / dr
+        res(iR, iPhi) % r = (vals(iR + 1, iPhi) - vals(iR, iPhi)) / dr
         ! grad_theta u = 0
         res(iR, iPhi) % theta = 0
         ! grad_phi u = (1/r) (partial u / partial phi)
-        res(iR, iPhi) % phi = 1/r * (u(iR, iPhi + 1) - u(iR, iPhi)) / dPhi
+        res(iR, iPhi) % phi = 1/r * (vals(iR, iPhi + 1) - vals(iR, iPhi)) / dPhi
       end do
     end do
   end subroutine doGrad
@@ -127,7 +141,7 @@ contains
     double precision, intent (in), dimension (:, :) :: Atheta
     type (meshSphereEquator), intent (in) :: meshEquator
     type (vecSphere), intent (out), &
-      dimension (size(vals, 1) - 1, size(vals, 2) - 1) :: res
+      dimension (size(Atheta, 1) - 1, size(Atheta, 2) - 1 ) :: res
 
     integer :: iR, iPhi, nR, nPhi
     double precision :: r, dr, dPhi
@@ -135,8 +149,8 @@ contains
     nR = size(Atheta, 1)
     nPhi = size(Atheta, 2)
 
-    checkGrid(meshEquator%nR, nR, 'r mesh')
-    checkGrid(meshEquator%nPhi, nPhi, 'phi mesh')
+    call checkGrid(meshEquator%nR, nR, 'r mesh')
+    call checkGrid(meshEquator%nPhi, nPhi, 'phi mesh')
 
     dr = calcDr(meshEquator)
     dPhi = calcDphi(meshEquator)
@@ -165,7 +179,7 @@ contains
     double precision, intent (in), dimension (:, :) :: Ar, Aphi
     type (meshSphereEquator), intent (in) :: meshEquator
     double precision, intent (out), &
-      dimension (size(vals, 1) - 1, size(vals, 2) - 1) :: res
+      dimension (size(Ar, 1) - 1, size(Ar, 2) - 1) :: res
 
     integer :: iR, iPhi, nR, nPhi, nR2, nPhi2
     double precision :: r, dr, dPhi
@@ -175,10 +189,10 @@ contains
     nR2 = size(Aphi, 1)
     nPhi2 = size(Aphi, 2)
 
-    checkGrid(meshEquator%nR, nR, 'r mesh for Ar')
-    checkGrid(meshEquator%nPhi, nPhi, 'phi mesh for Ar')
-    checkGrid(meshEquator%nR, nR2, 'r mesh for Aphi')
-    checkGrid(meshEquator%nPhi, nPhi2, 'phi mesh for Aphi')
+    call checkGrid(meshEquator%nR, nR, 'r mesh for Ar')
+    call checkGrid(meshEquator%nPhi, nPhi, 'phi mesh for Ar')
+    call checkGrid(meshEquator%nR, nR2, 'r mesh for Aphi')
+    call checkGrid(meshEquator%nPhi, nPhi2, 'phi mesh for Aphi')
 
     dr = calcDr(meshEquator)
     dPhi = calcDphi(meshEquator)
@@ -193,7 +207,7 @@ contains
                         ) / dr &
         !             + 1/r * (partial Aphi / partial phi)
                       + 1 / r * ( &
-                          Aphi(iR, iPhi + 1) - Aphi(iR, iPhi)
+                          Aphi(iR, iPhi + 1) - Aphi(iR, iPhi) &
                         ) / dPhi
       end do
     end do
@@ -213,8 +227,8 @@ contains
     nR = size(vals, 1)
     nPhi = size(vals, 2)
 
-    checkGrid(meshEquator%nR, nR, 'r mesh for Ar')
-    checkGrid(meshEquator%nPhi, nPhi, 'phi mesh for Ar')
+    call checkGrid(meshEquator%nR, nR, 'r mesh for Ar')
+    call checkGrid(meshEquator%nPhi, nPhi, 'phi mesh for Ar')
 
     dr = calcDr(meshEquator)
     dPhi = calcDphi(meshEquator)
