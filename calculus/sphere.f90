@@ -199,6 +199,48 @@ contains
     end do
   end subroutine doDiv
 
+  subroutine doLaplace(res, vals, meshEquator)
+    implicit none
+                                           !  r, phi
+    double precision, intent (in), dimension (:, :) :: vals
+    type (meshSphereEquator), intent (in) :: meshEquator
+    double precision, intent (out), &
+      dimension (size(vals, 1) - 1, size(vals, 2) - 1) :: res
+
+    integer :: iR, iPhi, nR, nPhi
+    double precision :: r, dr, dPhi
+
+    nR = size(vals, 1)
+    nPhi = size(vals, 2)
+
+    checkGrid(meshEquator%nR, nR, 'r mesh for Ar')
+    checkGrid(meshEquator%nPhi, nPhi, 'phi mesh for Ar')
+
+    dr = calcDr(meshEquator)
+    dPhi = calcDphi(meshEquator)
+
+    do iPhi = 2, nPhi - 2
+      do iR = 2, nR - 2
+        ! Now defined at the grid point. 
+        r = calcR(iR, dr, meshEquator) - dr / 2
+        res(iR - 1, iPhi - 1) = &
+          !   1/(r^2) (r^2 f,r),r &
+          1 / (r ** 2) * ( &
+            ! To compute (r^2 f,r) at outer grid
+              (r + dr / 2) ** 2 * &
+                (vals(iR + 1, iPhi) - vals(iR, iPhi)) / dr &
+            ! To compute (r^2 f,r) at inner grid
+            - (r - dr / 2) ** 2 * &
+                (vals(iR, iPhi) - vals(iR - 1, iPhi)) / dr &
+          ) / dr &
+          ! + 1/(r^2) f,PhiPhi 
+          + 1 / (r ** 2) * &
+            (vals(iR, iPhi + 1) + vals(iR, iPhi - 1) - 2 * vals(iR, iPhi)) &
+            / (dPhi ** 2)
+      end do
+    end do
+  end subroutine doLaplace
+
   subroutine checkGrid(a, b, namen)
     implicit none
     integer, intent (in) :: a, b
