@@ -132,8 +132,8 @@ contains
     integer :: iR, iPhi, nR, nPhi
     double precision :: r, dr, dPhi
 
-    nR = size(vals, 1)
-    nPhi = size(vals, 2)
+    nR = size(Atheta, 1)
+    nPhi = size(Atheta, 2)
 
     checkGrid(meshEquator%nR, nR, 'r mesh')
     checkGrid(meshEquator%nPhi, nPhi, 'phi mesh')
@@ -158,6 +158,46 @@ contains
       end do
     end do
   end subroutine doCurl
+
+  subroutine doDiv(res, Ar, Aphi, meshEquator)
+    implicit none
+                                           !  r, phi
+    double precision, intent (in), dimension (:, :) :: Ar, Aphi
+    type (meshSphereEquator), intent (in) :: meshEquator
+    double precision, intent (out), &
+      dimension (size(vals, 1) - 1, size(vals, 2) - 1) :: res
+
+    integer :: iR, iPhi, nR, nPhi, nR2, nPhi2
+    double precision :: r, dr, dPhi
+
+    nR = size(Ar, 1)
+    nPhi = size(Ar, 2)
+    nR2 = size(Aphi, 1)
+    nPhi2 = size(Aphi, 2)
+
+    checkGrid(meshEquator%nR, nR, 'r mesh for Ar')
+    checkGrid(meshEquator%nPhi, nPhi, 'phi mesh for Ar')
+    checkGrid(meshEquator%nR, nR2, 'r mesh for Aphi')
+    checkGrid(meshEquator%nPhi, nPhi2, 'phi mesh for Aphi')
+
+    dr = calcDr(meshEquator)
+    dPhi = calcDphi(meshEquator)
+
+    do iPhi = 1, nPhi - 1
+      do iR = 1, nR - 1
+        r = calcR(iR, dr, meshEquator) 
+        ! div A       = 1/(r^2) (partial (r^2 Ar) / partial r) &
+        res(iR, iPhi) = 1 / (r ** 2) * ( &
+                            (r + dr/2)**2 * Ar(iR + 1, iPhi) &
+                          - (r - dr/2)**2 * Ar(iR,     iPhi) &
+                        ) / dr &
+        !             + 1/r * (partial Aphi / partial phi)
+                      + 1 / r * ( &
+                          Aphi(iR, iPhi + 1) - Aphi(iR, iPhi)
+                        ) / dPhi
+      end do
+    end do
+  end subroutine doDiv
 
   subroutine checkGrid(a, b, namen)
     implicit none
