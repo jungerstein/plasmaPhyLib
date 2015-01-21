@@ -206,9 +206,15 @@ contains
                           - (r - dr/2)**2 * Ar(iR,     iPhi) &
                         ) / dr &
         !             + 1/r * (partial Aphi / partial phi)
-                      + 1 / (r) * ( &
-                          Aphi(iR, iPhi + 1) - Aphi(iR, iPhi) &
-                        ) / dPhi
+                      + ( &
+                          1 / (r - dr / 2) * ( &
+                            Aphi(iR, iPhi + 1) - Aphi(iR, iPhi) &
+                          ) &
+                        + &
+                          1 / (r + dr / 2) * ( &
+                            Aphi(iR + 1, iPhi + 1) - Aphi(iR, iPhi) &
+                          ) &
+                        ) / 2 / dPhi
       end do
     end do
   end subroutine doDiv
