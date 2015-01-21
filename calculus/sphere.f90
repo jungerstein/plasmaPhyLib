@@ -267,4 +267,21 @@ contains
       stop
     end if
   end subroutine checkGrid
+
+  function shrinkMesh(mesh)
+    implicit none
+    type (meshSphereEquator), intent (in) :: mesh
+    type (meshSphereEquator) :: shrinkMesh
+
+    double precision :: dr, dphi
+
+    dr = calcDr(mesh)
+    dphi = calcDphi(mesh)
+    shrinkMesh % rMin = mesh % rMin + dr / 2
+    shrinkMesh % rMax = mesh % rMax - dr / 2
+    shrinkMesh % phiMin = mesh % phiMin + dphi / 2
+    shrinkMesh % phiMax = mesh % phiMax - dphi / 2
+    shrinkMesh % nr = mesh % nr - 1
+    shrinkMesh % nPhi = mesh % nPhi - 1
+  end function shrinkMesh
 end module spherCalculus
