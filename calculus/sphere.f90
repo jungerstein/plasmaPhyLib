@@ -206,7 +206,7 @@ contains
                           - (r - dr/2)**2 * Ar(iR,     iPhi) &
                         ) / dr &
         !             + 1/r * (partial Aphi / partial phi)
-                      + 1 / (r - dr / 2) * ( &
+                      + 1 / (r) * ( &
                           Aphi(iR, iPhi + 1) - Aphi(iR, iPhi) &
                         ) / dPhi
       end do
