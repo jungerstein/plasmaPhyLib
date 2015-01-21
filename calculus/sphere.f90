@@ -249,7 +249,7 @@ contains
           ) / dr &
           ! + 1/(r^2) f,PhiPhi 
           + 1 / (r ** 2) * &
-            (vals(iR + 1, iPhi + 1) + vals(iR + 1, iPhi - 1) - 2 * vals(iR + 1, iPhi)) &
+            (vals(iR, iPhi + 1) + vals(iR, iPhi - 1) - 2 * vals(iR, iPhi)) &
             / (dPhi ** 2)
       end do
     end do
