@@ -129,7 +129,7 @@ contains
         ! grad_theta u = 0
         res(iR, iPhi) % theta = 0
         ! grad_phi u = (1/r) (partial u / partial phi)
-        res(iR, iPhi) % phi = 1/r * (vals(iR, iPhi + 1) - vals(iR, iPhi)) / dPhi
+        res(iR, iPhi) % phi = 1/(r - dr / 2) * (vals(iR, iPhi + 1) - vals(iR, iPhi)) / dPhi
       end do
     end do
   end subroutine doGrad
@@ -159,7 +159,7 @@ contains
       do iR = 1, nR - 1
         r = calcR(iR, dr, meshEquator) 
         ! curl A_r = - 1 / r * (partial Atheta / partial phi) 
-        res(iR, iPhi) % r = - 1 / r * &
+        res(iR, iPhi) % r = - 1 / (r - dr / 2) * &
           (Atheta(iR, iPhi + 1) - Atheta(iR, iPhi)) / dPhi
         ! grad_theta u = 0
         res(iR, iPhi) % theta = 0
