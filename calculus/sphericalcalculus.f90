@@ -57,5 +57,5 @@ module sphericalcalculus
       / (atPhNext%phPos - atPhPrev%phPos)
 
     div = rContrib + thContrib + phContrib
-  end function sphericalVectorDiv
-end module sphericalvec3d
+  end function sphericalVectorDivCentreDiff
+end module sphericalcalculus
