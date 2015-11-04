@@ -36,8 +36,8 @@ module sphericalcalculus
     atRNext = neighbour%rNext
     atThPrev = neighbour%thPrev
     atThNext = neighbour%thNext
-    atPhPrev = neighbour%phrPrev
-    atPhNext = neighbour%phrNext
+    atPhPrev = neighbour%phPrev
+    atPhNext = neighbour%phNext
 
     ! FIXME Mind catastrophic cancellation. 
 
