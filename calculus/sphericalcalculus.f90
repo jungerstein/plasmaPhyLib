@@ -7,24 +7,37 @@
 
 module sphericalcalculus
   use sphericalvec3d
+  implicit none
+
+  type neighbourCentreDiff
+    type (sphvec3) :: rPrev, rNext, thPrev, thNext, phPrev, phNext
+  end type neighbourCentreDiff
+
   interface operator (.div.)
-    module procedure :: sphericalVectorDiv
+    module procedure :: sphericalVectorDivCentreDiff
   end interface
 
   contains 
 
   ! Use central differentation. 
   ! FIXME Check values at zero and polars. 
-  elemental function sphericalVectorDiv &
-      (theVec, atRPrev, atRNext, atThPrev, atThNext, atPhPrev, atPhNext) &
+  elemental function sphericalVectorDivCentreDiff &
+      (theVec, neighbour) &
       result (div)
     implicit none 
 
-    type (sphvec3), intent (in) :: theVec, atRPrev, atRNext, &
-      atThPrev, atThNext, atPhPrev, atPhNext
+    type (sphvec3), intent (in) :: theVec
+    type (neighbourCentreDiff), intent (in) :: neighbour
     double precision :: div
 
     double precision :: rContrib, thContrib, phContrib
+    type (sphvec3) :: atRPrev, atRNext, atThPrev, atThNext, atPhPrev, atPhNext
+    atRPrev = neighbour%rPrev
+    atRNext = neighbour%rNext
+    atThPrev = neighbour%thPrev
+    atThNext = neighbour%thNext
+    atPhPrev = neighbour%phrPrev
+    atPhNext = neighbour%phrNext
 
     ! FIXME Mind catastrophic cancellation. 
 
